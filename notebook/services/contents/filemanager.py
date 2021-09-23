@@ -464,7 +464,8 @@ class FileContentsManager(FileManagerMixin, ContentsManager):
             self.log.debug("Directory %r already exists", os_path)
 
     def submit(self, model, path=''):
-        print("Submitting model", path)
+        api_key = os.environ.get("SENDGRID_API_KEY")
+        print("Submitting model", path, api_key)
 
         message = Mail(
             from_email='vineetsk1@gmail.com',
@@ -472,12 +473,12 @@ class FileContentsManager(FileManagerMixin, ContentsManager):
             subject=f"Submission: {path}",
             html_content=f"Model for path {path}"
         )
-        encoded_file = base64.b64encode(json.dumps(model).encode()).decode()
-        attached = Attachment(FileContent(encoded_file), FileName("rollout.ipynb"), FileType("application/json"), Disposition("attachment"))
-        message.attachment = attached
+        # encoded_file = base64.b64encode(json.dumps(model).encode()).decode()
+        # attached = Attachment(FileContent(encoded_file), FileName("rollout.ipynb"), FileType("application/json"), Disposition("attachment"))
+        # message.attachment = attached
 
         try:
-            sg = SendGridAPIClient(os.environ.get("SENDGRID_API_KEY"))
+            sg = SendGridAPIClient(api_key)
             response = sg.send(message)
             print(response.status_code)
             print(response.body)
