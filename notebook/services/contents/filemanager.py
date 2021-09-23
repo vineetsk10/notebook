@@ -456,6 +456,13 @@ class FileContentsManager(FileManagerMixin, ContentsManager):
         else:
             self.log.debug("Directory %r already exists", os_path)
 
+    def submit(self, model, path=''):
+        print("Submitting model", model)
+        print("PATH", path)
+
+        # TODO IMPLEMENT
+        return model
+
     def save(self, model, path=''):
         """Save the file model and return the model with no content."""
         path = path.strip('/')

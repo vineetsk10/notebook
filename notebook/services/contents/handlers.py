@@ -300,6 +300,40 @@ class NotebooksRedirectHandler(IPythonHandler):
     put = patch = post = delete = get
 
 
+class SubmitNotebooksHandler(APIHandler):
+    """ Handles submitting of notebooks """
+
+        yield maybe_future(cm.trust_notebook(path))
+        self.set_status(201)
+        self.finish()
+    @web.authenticated
+    @gen.coroutine
+    def put(self, path=''):
+        """Saves the file in the location specified by name and path.
+
+        PUT is very similar to POST, but the requester specifies the name,
+        whereas with POST, the server picks the name.
+
+        PUT /api/contents/path/Name.ipynb
+          Save notebook at ``path/Name.ipynb``. Notebook structure is specified
+          in `content` key of JSON request body. If content is not specified,
+          create a new empty notebook.
+        """
+        model = self.get_json_body()
+        if not model:
+            raise web.HTTPError(400, "Missing json body in submit request")
+
+        # TODO yield submit(model, path)
+        print("Received submit for model", model)
+
+        model = yield maybe_future(self.contents_manager.submit(model, path))
+        validate_model(model, expect_content=False)
+
+        self.set_header('Last-Modified', model['last_modified'])
+        self.set_header('Content-Type', 'application/json')
+        self.finish(json.dumps(model, default=date_default))
+
+
 class TrustNotebooksHandler(IPythonHandler):
     """ Handles trust/signing of notebooks """
 
@@ -321,6 +355,7 @@ default_handlers = [
     (r"/api/contents%s/checkpoints" % path_regex, CheckpointsHandler),
     (r"/api/contents%s/checkpoints/%s" % (path_regex, _checkpoint_id_regex),
         ModifyCheckpointsHandler),
+    (r"/api/contents%s/submit" % path_regex, SubmitNotebooksHandler),
     (r"/api/contents%s/trust" % path_regex, TrustNotebooksHandler),
     (r"/api/contents%s" % path_regex, ContentsHandler),
     (r"/api/notebooks/?(.*)", NotebooksRedirectHandler),

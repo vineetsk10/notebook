@@ -185,6 +185,18 @@ define(function(requirejs) {
         var url = this.api_url(path);
         return utils.promising_ajax(url, settings);
     };
+
+    Contents.prototype.submit = function(path, model) {
+        var settings = {
+            processData : false,
+            type : "PUT",
+            dataType: "json",
+            data : JSON.stringify(model),
+            contentType: 'application/json',
+        };
+        var url = this.api_url(path, "submit");
+        return utils.promising_ajax(url, settings);
+    }
     
     Contents.prototype.copy = function(from_file, to_dir) {
         /**

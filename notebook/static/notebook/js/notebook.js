@@ -2721,6 +2721,37 @@ define([
      * .save_notebook method *after* the entire notebook has been loaded.
      *
      */
+
+
+    Notebook.prototype.submit_notebook = function() {
+        var error;
+        if (!this._fully_loaded) {
+            error = new Error("Load failed, submit is disabled");
+            this.events.trigger('notebook_save_failed.Notebook', error);
+            return Promise.reject(error);
+        }
+
+        // Create a JSON model to be sent to the server.
+        var model = {
+            type : "notebook",
+            content : this.toJSON()
+        };
+        // time the ajax call for autosave tuning purposes.
+        var start =  new Date().getTime();
+
+        var that = this;
+        var _submit = function () {
+            return that.contents.submit(that.notebook_path, model).then(
+                $.proxy(that.submit_notebook_success, that, start),
+                function (error) {
+                    // This hasn't handled the error, so propagate it up
+                    return Promise.reject(error);
+                }
+            );
+        };
+        return _submit();
+    }
+
     Notebook.prototype.save_notebook = function (check_last_modified) {
         if (check_last_modified === undefined) {
             check_last_modified = true;
@@ -2817,6 +2848,24 @@ define([
         } else {
             return _save();
         }
+    };
+
+    Notebook.prototype.submit_notebook_success = function (start, data) {
+        var body = $("<div>");
+        var title = i18n.msg._("Submitted notebook");
+        body.append($("<p>").text(i18n.msg._("Submitted notebook successfully")));
+        dialog.modal({
+            notebook: this,
+            keyboard_manager: this.keyboard_manager,
+            title: title,
+            body: body,
+            buttons: {
+                OK: {
+                    "class": "btn-primary"
+                }
+            }
+        });
+        return data;
     };
     
     /**
