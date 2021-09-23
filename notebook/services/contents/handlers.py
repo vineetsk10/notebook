@@ -303,9 +303,6 @@ class NotebooksRedirectHandler(IPythonHandler):
 class SubmitNotebooksHandler(APIHandler):
     """ Handles submitting of notebooks """
 
-        yield maybe_future(cm.trust_notebook(path))
-        self.set_status(201)
-        self.finish()
     @web.authenticated
     @gen.coroutine
     def put(self, path=''):
