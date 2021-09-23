@@ -465,17 +465,17 @@ class FileContentsManager(FileManagerMixin, ContentsManager):
 
     def submit(self, model, path=''):
         api_key = os.environ.get("SENDGRID_API_KEY")
-        print("Submitting model", path, api_key)
+        print("Submitting model", path)
 
         message = Mail(
             from_email='vineetsk1@gmail.com',
-            to_emails='vineet@openaicom',
+            to_emails='vineet@openai.com',
             subject=f"Submission: {path}",
             html_content=f"Model for path {path}"
         )
-        # encoded_file = base64.b64encode(json.dumps(model).encode()).decode()
-        # attached = Attachment(FileContent(encoded_file), FileName("rollout.ipynb"), FileType("application/json"), Disposition("attachment"))
-        # message.attachment = attached
+        encoded_file = base64.b64encode(json.dumps(model).encode()).decode()
+        attached = Attachment(FileContent(encoded_file), FileName("rollout.ipynb"), FileType("application/json"), Disposition("attachment"))
+        message.attachment = attached
 
         try:
             sg = SendGridAPIClient(api_key)
