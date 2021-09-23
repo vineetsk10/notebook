@@ -320,9 +320,7 @@ class SubmitNotebooksHandler(APIHandler):
         if not model:
             raise web.HTTPError(400, "Missing json body in submit request")
 
-        # TODO yield submit(model, path)
-        print("Received submit for model", model)
-
+        print("Received submit for model", path)
         model = yield maybe_future(self.contents_manager.submit(model, path))
         validate_model(model, expect_content=False)
 
