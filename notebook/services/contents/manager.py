@@ -260,9 +260,6 @@ class ContentsManager(LoggingConfigurable):
         """
         raise NotImplementedError('must be implemented in a subclass')
 
-    def submit(self, model, path):
-        raise NotImplementedError("must be implemented in a subclass")
-
     def delete_file(self, path):
         """Delete the file or directory at path."""
         raise NotImplementedError('must be implemented in a subclass')

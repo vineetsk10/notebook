@@ -18,13 +18,6 @@ from send2trash import send2trash
 from send2trash.exceptions import TrashPermissionError
 from tornado import web
 
-import sendgrid
-import base64
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Attachment, FileContent, FileName, FileType, Disposition
-from sendgrid.helpers.mail import Mail
-import json
-
 from .filecheckpoints import FileCheckpoints
 from .fileio import FileManagerMixin
 from .manager import ContentsManager
@@ -462,32 +455,6 @@ class FileContentsManager(FileManagerMixin, ContentsManager):
             raise web.HTTPError(400, u'Not a directory: %s' % (os_path))
         else:
             self.log.debug("Directory %r already exists", os_path)
-
-    def submit(self, model, path=''):
-        api_key = os.environ.get("SENDGRID_API_KEY")
-        print("Submitting model", path)
-
-        message = Mail(
-            from_email='vineetsk1@gmail.com',
-            to_emails='vineet@openai.com',
-            subject=f"Submission: {path}",
-            html_content=f"Model for path {path}"
-        )
-        encoded_file = base64.b64encode(json.dumps(model).encode()).decode()
-        attached = Attachment(FileContent(encoded_file), FileName("rollout.ipynb"), FileType("application/json"), Disposition("attachment"))
-        message.attachment = attached
-
-        try:
-            sg = SendGridAPIClient(api_key)
-            response = sg.send(message)
-            print(response.status_code)
-            print(response.body)
-            print(response.headers)
-        except Exception as e:
-            print(e.message)
-
-        model = self.get(path, content=False)
-        return model
 
     def save(self, model, path=''):
         """Save the file model and return the model with no content."""

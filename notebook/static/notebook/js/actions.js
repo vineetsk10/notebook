@@ -889,19 +889,6 @@ define([
                 return false;
             }
         },
-        'submit-notebook':{
-            cmd: i18n.msg._('submit notebook'),
-            help: i18n.msg._("Submit Notebook"),
-            help_index : 'fb',
-            icon: 'fa-paper-plane',
-            handler : function (env, event) {
-                env.notebook.submit_notebook();
-                if(event){
-                    event.preventDefault();
-                }
-                return false;
-            }
-        }
     };
 
     // private stuff that prepend `jupyter-notebook:` to actions names
