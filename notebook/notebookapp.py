@@ -134,6 +134,9 @@ try:
 except ImportError:
     terminado_available = False
 
+
+from azure.storage.blob import ContainerClient
+
 #-----------------------------------------------------------------------------
 # Module globals
 #-----------------------------------------------------------------------------
@@ -2280,6 +2283,23 @@ class NotebookApp(JupyterApp):
         must be done prior to calling this method."""
 
         super().start()
+
+        # Download files from azure
+        info(_("Downloading notebooks from remote azure source..."))
+        sas_url = os.environ.get("AZURE_SAS_URL")
+        uname = os.environ.get("AZURE_STORAGE_ACCOUNT")
+        bucket = os.environ.get("AZURE_STORAGE_BUCKET")
+        sas_url = f"https://{uname}.blob.core.windows.net/{bucket}?{sas_url}"
+        client = ContainerClient.from_container_url(sas_url)
+        prefix = "data/interactive_debugging/"
+        blobs = client.list_blobs(name_starts_with=prefix)
+        for blob in blobs:
+            blob_client = client.get_blob_client(blob.name)
+            fname = blob.name.split(prefix)[-1]
+            print(f"Downloading {blob.name} to {fname}")
+            with open(fname, "wb") as f:
+                download_stream = blob_client.download_blob()
+                f.write(download_stream.readall())
 
         if not self.allow_root:
             # check if we are running as root, and abort if it's not allowed
