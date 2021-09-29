@@ -2285,7 +2285,7 @@ class NotebookApp(JupyterApp):
         super().start()
 
         # Download files from azure
-        info(_("Downloading notebooks from remote azure source..."))
+        self.log.info(_("Downloading notebooks from remote azure source..."))
         sas_url = os.environ.get("AZURE_SAS_URL")
         uname = os.environ.get("AZURE_STORAGE_ACCOUNT")
         bucket = os.environ.get("AZURE_STORAGE_BUCKET")
