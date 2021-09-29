@@ -2297,7 +2297,7 @@ class NotebookApp(JupyterApp):
             blob_client = client.get_blob_client(blob.name)
             fname = blob.name.split(prefix)[-1]
             print(f"Downloading {blob.name} to {fname}")
-            with open(fname, "wb") as f:
+            with open(os.path.join("nbs", fname), "wb") as f:
                 download_stream = blob_client.download_blob()
                 f.write(download_stream.readall())
 
