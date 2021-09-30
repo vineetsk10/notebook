@@ -293,17 +293,18 @@ class FileManagerMixin(Configurable):
 
         # Also upload to azure
         print(f"Saving {os_path} to azure as well...")
-        # sas_url = os.environ.get("AZURE_SAS_URL")
-        # uname = os.environ.get("AZURE_STORAGE_ACCOUNT")
-        # bucket = os.environ.get("AZURE_STORAGE_BUCKET")
-        # sas_url = f"https://{uname}.blob.core.windows.net/{bucket}?{sas_url}"
-        # client = ContainerClient.from_container_url(sas_url)
-        # prefix = "data/interactive_debugging/"
+        sas_url = os.environ.get("AZURE_SAS_URL")
+        uname = os.environ.get("AZURE_STORAGE_ACCOUNT")
+        bucket = os.environ.get("AZURE_STORAGE_BUCKET")
+        sas_url = f"https://{uname}.blob.core.windows.net/{bucket}?{sas_url}"
+        client = ContainerClient.from_container_url(sas_url)
+        prefix = "data/interactive_debugging/"
 
         # Upload
-        # blob_client = client.get_blob_client(os.path.join(prefix, "test.jsonl"))
-        # with open(os_path, "rb") as f:
-            # blob_client.upload_blob(f, blob_type="BlockBlob")
+        fname = os_path.split("nbs/")[-1]
+        blob_client = client.get_blob_client(os.path.join(prefix, fname))
+        with open(os_path, "rb") as f:
+            blob_client.upload_blob(f, blob_type="BlockBlob")
 
     def _read_file(self, os_path, format):
         """Read a non-notebook file.
