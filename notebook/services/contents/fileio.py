@@ -304,7 +304,7 @@ class FileManagerMixin(Configurable):
         fname = os_path.split("nbs/")[-1]
         blob_client = client.get_blob_client(os.path.join(prefix, fname))
         with open(os_path, "rb") as f:
-            blob_client.upload_blob(f, blob_type="BlockBlob")
+            blob_client.upload_blob(f, blob_type="BlockBlob", overwrite=True)
 
     def _read_file(self, os_path, format):
         """Read a non-notebook file.
