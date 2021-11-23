@@ -32,6 +32,7 @@ import threading
 import time
 import warnings
 import webbrowser
+from pathlib import Path
 
 try:
     import resource
@@ -2297,7 +2298,9 @@ class NotebookApp(JupyterApp):
             blob_client = client.get_blob_client(blob.name)
             fname = blob.name.split(prefix)[-1]
             print(f"Downloading {blob.name} to {fname}")
-            with open(os.path.join("nbs", fname), "wb") as f:
+            full_path = os.path.join("nbs", fname)
+            Path("/".join(full_path.split("/")[:-1])).mkdir(parents=True, exist_ok=True)
+            with open(full_path, "wb") as f:
                 download_stream = blob_client.download_blob()
                 f.write(download_stream.readall())
 
